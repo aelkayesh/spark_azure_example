@@ -16,12 +16,14 @@ public class StackOverFlowSurvey {
 
     public static void main(String[] args) throws Exception {
 
-        Logger.getLogger("org").setLevel(Level.ERROR);
-        SparkSession session = SparkSession.builder().appName("StackOverFlowSurvey").master("local[1]").getOrCreate();
+       // Logger.getLogger("org").setLevel(Level.ERROR);
+        SparkSession session = SparkSession.builder().appName("StackOverFlowSurvey").getOrCreate();
+        session.sparkContext().hadoopConfiguration().set("fs.azure", "org.apache.hadoop.fs.azure.NativeAzureFileSystem");
+        session.sparkContext().hadoopConfiguration().set("fs.azure.account.key.youraccount.blob.core.windows.net", "key");
 
         DataFrameReader dataFrameReader = session.read();
 
-        Dataset<Row> responses = dataFrameReader.option("header","true").csv("in/2016-stack-overflow-survey-responses.csv");
+        Dataset<Row> responses = dataFrameReader.option("header","true").csv("wasbs://files@youraccount.blob.core.windows.net/file.csv");
 
         System.out.println("=== Print out schema ===");
         responses.printSchema();
